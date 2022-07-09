@@ -1760,16 +1760,21 @@ function src_autoLink (text, options) {
   },
   data () {
     return {
-      focused: false,
-      body: ''
+      focused: false
     }
   },
   computed: {
+    valueModel: {
+      get () { return this.value },
+      set (value) {
+        this.$emit('input', value)
+      }
+    },
     showPlaceholder () {
-      return !this.body.replace(/^\s*\n/gm, '').length
+      return !this.valueModel.replace(/^\s*\n/gm, '').length
     },
     computedBody () {
-      return highlight(this.body, {
+      return highlight(this.valueModel, {
         extractUrlsWithoutProtocol: this.extractUrlsWithoutProtocol,
         mentionsWithDots: this.mentionsWithDots
       })
@@ -1798,7 +1803,7 @@ function src_autoLink (text, options) {
     },
     clear () {
       this.$refs.mbody.innerText = ''
-      this.body = ''
+      this.valueModel = ''
     },
     onKeyUp (e) {
       const keysToIgnore = ['Shift', 'Meta', 'Control', 'Alt', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
@@ -1808,8 +1813,7 @@ function src_autoLink (text, options) {
       if (e.key === 'Enter') {
         caretPosition++
       }
-      this.body = e.target.innerText
-      this.$emit('input', this.body)
+      this.valueModel = e.target.innerText
       this.$nextTick(() => {
         this.setCaretPos(caretPosition)
       })
